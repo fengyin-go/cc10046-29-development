@@ -28,6 +28,9 @@
       </span>
     </p>
 
+    <FieldMapperDryRun v-if="meta.key === 'field_mapper'" />
+    <RevalidationPanel v-if="meta.key === 'data_validator'" />
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -103,6 +106,8 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/backend-service'
+import FieldMapperDryRun from '@/components/FieldMapperDryRun.vue'
+import RevalidationPanel from '@/components/RevalidationPanel.vue'
 import type { EntryRow } from '@/data/types'
 
 const props = defineProps<{ moduleKey: string }>()

@@ -1,6 +1,8 @@
 """__NAME__领域服务：字段、状态和动作来自业务配置，数据处理骨架由基类复用。"""
 from __future__ import annotations
 
+from typing import Any
+
 from app.services.base import BaseModuleService
 
 
@@ -35,3 +37,29 @@ class FieldMapperService(BaseModuleService):
                     value = 0
             result[tgt_field] = value
         return result
+
+    def domain_map_revalidation_batch(
+        self,
+        batch_ref: Any,
+        sources: list[str] | None = None,
+        sample_data: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | None:
+        """读取字段复验批次实际通过的规则版本运行字段映射试跑。
+
+        批次详情页和字段映射试跑都从同一个复验仓储取生效范围，
+        因此两边看到的版本、映射值和待补字段完全一致。
+        """
+        from app.services.field_revalidation import revalidation_service
+
+        return revalidation_service.dry_run(
+            batch_ref, sources=sources, sample_data=sample_data or {})
+
+    def effective_scope_for_batch(
+        self,
+        batch_ref: Any,
+        sources: list[str] | None = None,
+    ) -> dict[str, Any] | None:
+        """与复验批次详情页同源的生效范围查询。"""
+        from app.services.field_revalidation import revalidation_service
+
+        return revalidation_service.effective_scope(batch_ref, sources)
